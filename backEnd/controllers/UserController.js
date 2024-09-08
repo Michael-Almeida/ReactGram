@@ -5,8 +5,8 @@ const jwt = require("jsonwebtoken");
 const jwtSecret = process.env.JWT_SECRET;
 
 // Gerar o token de usuário
-const generateToken = (id) => {
-  return jwt.sign({ id }, jwtSecret, {
+const generateToken = (_id) => {
+  return jwt.sign({ _id }, jwtSecret, {
     expiresIn: "7d",
   });
 };
@@ -35,20 +35,46 @@ const register = async (req, res) => {
   if (!newUser) {
     return res
       .status(422)
-      .json({ errors: ["Houve um erro, por favor tente mais tarde"] });
+      .json({ error: ["Houve um erro, por favor tente mais tarde"] });
   }
 
   res.status(201).json({
-    _id: newUser.id,
-    token: generateToken(newUser.id),
+    _id: newUser._id,
+    token: generateToken(newUser._id),
   });
 };
 
-const login = (req, res) => {
-  res.send("Login");
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email });
+
+  // check if user exists
+  if (!user) {
+    return res.status(404).json({ error: ["Usuário não cadastrado"] });
+  }
+
+  // Check if password matches
+  if (!(await bcrypt.compare(password, user.password))) {
+    return res.status(422).json({ error: ["Senha inválida"] });
+  }
+  res.status(201).json({
+    _id: user._id,
+    profileImage:user.profileImage,
+    token: generateToken(user._id),
+  });
+  // return user with token
 };
+
+// Gett current logged in user
+const getCurrentUser = async (req, res)=>{
+  const user = req.user;
+
+  res.status(200).json(user);
+}
 
 module.exports = {
   register,
   login,
+  getCurrentUser
 };
