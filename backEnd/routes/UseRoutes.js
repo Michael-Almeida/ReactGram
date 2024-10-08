@@ -5,6 +5,7 @@ const {
   register,
   login,
   getCurrentUser,
+  getUserById,
   update,
 } = require("../controllers/UserController");
 
@@ -30,5 +31,6 @@ router.put(
   imageUpload.single("profileImage"),
   update
 );
+router.get("/:id", getUserById);
 
 module.exports = router;

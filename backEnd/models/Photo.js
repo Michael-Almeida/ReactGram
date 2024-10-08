@@ -1,14 +1,14 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const photoSchema = newSchema(
+const photoSchema = new Schema(
   {
     image: String,
     title: String,
     likes: Array,
     coments: Array,
     userId: mongoose.ObjectId,
-    userName: Sting,
+    userName: String,
   },
   {
     timestamps: true,
