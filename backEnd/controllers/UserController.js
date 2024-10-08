@@ -2,7 +2,7 @@ const User = require("../models/User");
 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const  mongoose = require("mongoose");
+const mongoose = require("mongoose");
 const jwtSecret = process.env.JWT_SECRET;
 
 // Gerar o token de usuário
@@ -86,9 +86,9 @@ const update = async (req, res) => {
 
   const reqUser = req.user;
 
-  const user = await User.findById(new mongoose.Types.ObjectId(reqUser._id)).select(
-    "-password"
-  );
+  const user = await User.findById(
+    new mongoose.Types.ObjectId(reqUser._id)
+  ).select("-password");
 
   if (name) {
     user.name = name;
@@ -115,9 +115,25 @@ const update = async (req, res) => {
   res.status(200).json(user);
 };
 
+// Get user by Id
+const getUserById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id).select("-password");
+    if (!user) {
+      return res.status(404).json({ error: ["Usuário não encontrado"] });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(422).json({ errors: ["Usuário não encontrado"] });
+    return;
+  }
+};
+
 module.exports = {
   register,
   login,
   getCurrentUser,
   update,
+  getUserById,
 };
