@@ -22,7 +22,7 @@ const insertPhoto = async (req, res) => {
   //   if photo created sucessfully
   if (!newPhoto) {
     res.status(422).json({
-      errors: ["Houve um erro, por favor tente mais tarde"],
+      errors: ["Houve um erro, por favor tente mais tarde."],
     });
     return;
   }
