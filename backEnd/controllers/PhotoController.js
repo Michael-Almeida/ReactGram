@@ -74,4 +74,49 @@ const gettUserPhotos = async (req, res) => {
   return res.status(200).json(photos);
 };
 
-module.exports = { insertPhoto, deletePhoto, getAllPhotos, gettUserPhotos };
+const getPhotoById = async (req, res) => {
+  const { id } = req.params;
+  const photo = await Photo.findById(new mongoose.Types.ObjectId(id));
+
+  if (!photo) {
+    return res.status(404).json({ errors: ["Foto não encontrada"] });
+  }
+
+  return res.status(200).json(photo);
+};
+
+const updatePhoto = async (req, res) => {
+  const { id } = req.params;
+  const { title } = req.body;
+
+  const reqUser = req.user;
+
+  const photo = await Photo.findById(id);
+
+  if (!photo) {
+    return res.status(404).json({ errors: ["Foto não encontrada"] });
+  }
+
+  if (!photo.userId.equals(reqUser.id)) {
+    return res
+      .status(422)
+      .json({ errors: ["Foto não localizada para este usuário"] });
+  }
+
+  if (title) {
+    photo.title = title;
+
+    await photo.save();
+
+    return res.status(200).json(photo);
+  }
+};
+
+module.exports = {
+  insertPhoto,
+  deletePhoto,
+  getAllPhotos,
+  gettUserPhotos,
+  getPhotoById,
+  updatePhoto,
+};
