@@ -29,4 +29,15 @@ const photoUpdateValidation = () => {
       .withMessage("O título precisa ter no mínimo 3 caracteres."),
   ];
 };
-module.exports = { photoInsertValidation, photoUpdateValidation };
+
+const commentValidation = () => {
+  return [
+    body("comment").isString().withMessage("O comentário é obrigatório."),
+  ];
+};
+
+module.exports = {
+  photoInsertValidation,
+  photoUpdateValidation,
+  commentValidation,
+};
