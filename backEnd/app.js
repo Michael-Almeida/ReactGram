@@ -7,14 +7,22 @@ const cors = require("cors");
 const port = process.env.PORT;
 
 const app = express();
+
+//solve cors
+app.use(
+  cors({
+    credentials: true,
+    origin: "http://localhost:3000", // Remover a barra no final
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 app.use(express.json());
 
 //Routes
 const router = require("./routes/Router.js");
 app.use(router);
-
-//solve cors
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
 // upload diretory
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
