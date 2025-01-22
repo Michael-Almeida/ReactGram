@@ -34,7 +34,7 @@ function App() {
             />
             <Route
               path="/register"
-              element={auth ? <Register /> : <Navigate to="/" />}
+              element={!auth ? <Register /> : <Navigate to="/" />}
             />
           </Routes>
         </div>
