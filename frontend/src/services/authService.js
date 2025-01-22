@@ -10,7 +10,7 @@ const register = async (data) => {
       .catch((err) => err);
 
     if (res) {
-      localStorage.setItem("User", JSON.stringify(res));
+      localStorage.setItem("user", JSON.stringify(res));
     }
     return res;
   } catch (error) {
