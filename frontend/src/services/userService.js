@@ -8,7 +8,6 @@ const profile = async (data, token) => {
       .then((res) => res.json())
       .catch((err) => err);
 
-
     return res;
   } catch (error) {
     console.log(error);

@@ -18,7 +18,6 @@ const EditProfile = () => {
 
   const { User, message, error, loading } = useSelector((state) => state.user);
 
-  console.log("user inicial", User);
   //   states
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -32,19 +31,12 @@ const EditProfile = () => {
     dispatch(profile());
   }, [dispatch]);
 
-  
-  console.log('dados user',User)
-  
   //   fill form with User data
   useEffect(() => {
     if (User) {
-      console.log("entrou no if o User", User);
-
       setName(User.name);
       setEmail(User.email);
       setBio(User.bio);
-    }else{
-        console.log("Usuário ainda vazio ou não carregado.");
     }
   }, [User]);
 

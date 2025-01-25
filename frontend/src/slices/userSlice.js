@@ -17,7 +17,6 @@ export const profile = createAsyncThunk(
 
     const data = await userService.profile(user, token);
 
-    console.log("data do userSlice", data);
     return data;
   }
 );
@@ -38,7 +37,6 @@ export const userSlice = createSlice({
         state.error = false;
       })
       .addCase(profile.fulfilled, (state, action) => {
-        console.log("Resposta da API no Redux:", action.payload);
         state.loading = false;
         state.sucess = true;
         state.error = null;
