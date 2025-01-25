@@ -21,12 +21,12 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const user = {
+    const User = {
       email,
       password,
     };
 
-    dispatch(login(user));
+    dispatch(login(User));
   };
 
   // clean all auth states
