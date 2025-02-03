@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 // Redux
-import { profile, resetMessage } from "../../slices/userSlice";
+import { profile, resetMessage, updateProfile } from "../../slices/userSlice";
 
 // components
 import Message from "../../components/Message";
@@ -40,17 +40,55 @@ const EditProfile = () => {
     }
   }, [User]);
 
-  const handleSubmit = (e) => {
-    e.ppreventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+
+    formData.append("name", name);
+
+    if (profileImage) {
+      formData.append("profileImage", profileImage);
+    }
+
+    if (bio) {
+      formData.append("bio", bio);
+    }
+    if (password) {
+      formData.append("password", password);
+    }
+
+    await dispatch(updateProfile(formData));
+
+    setTimeout(() => {
+      dispatch(resetMessage());
+    }, 2000);
   };
 
+  const handleFile = (e) => {
+    const image = e.target.files[0];
+
+    setPreviewImage(image);
+
+    setImageProfile(image);
+  };
   return (
     <div id="edit-profile">
       <h2>Edite seus dados</h2>
       <p className="subtitle">
         Adicione uma imagem de perfil e conte mais sobre você...
       </p>
-      {/* preview da imagem */}
+      {(User.profileImage || previewImage) && (
+        <img
+          className="profile-image"
+          src={
+            previewImage
+              ? URL.createObjectURL(previewImage)
+              : `${uploads}/users/${User.profileImage}`
+          }
+          alt={User.name}
+        />
+      )}
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -61,7 +99,7 @@ const EditProfile = () => {
         <input type="email" placeholder="E-mail" disabled value={email || ""} />
         <label>
           <span>Imagem do perfil:</span>
-          <input type="file" />
+          <input type="file" onChange={handleFile} />
         </label>
         <label>
           <span>Bio:</span>
@@ -81,7 +119,10 @@ const EditProfile = () => {
             value={password || ""}
           />
         </label>
-        <input type="submit" value="Atualizar" />
+        {!loading && <input type="submit" value="Atualizar" />}
+        {loading && <input type="submit" value="Aguarde..." disabled />}
+        {error && <Message msg={error} type="error" />}
+        {message && <Message msg={message} type="success" />}
       </form>
     </div>
   );
