@@ -25,6 +25,35 @@ export const publishPhoto = createAsyncThunk(
     return data;
   }
 );
+
+// GET user photos
+export const getUserPhotos = createAsyncThunk(
+  "photo/userphotos",
+  async (id, thunkAPI) => {
+    const token = thunkAPI.getState().auth.User.token;
+
+    const data = await photoService.getUserPhotos(id, token);
+
+    return data;
+  }
+);
+
+// delete
+export const deletePhoto = createAsyncThunk(
+  "photo/delete",
+  async (id, thunkAPI) => {
+    const token = thunkAPI.getState().auth.User.token;
+
+    const data = await photoService.deletePhoto(id, token);
+
+    if (data.errors) {
+      return thunkAPI.rejectWithValue(data.errors[0]);
+    }
+
+    return data;
+  }
+);
+
 export const photoSlice = createSlice({
   name: "photo",
   initialState,
@@ -50,7 +79,35 @@ export const photoSlice = createSlice({
       .addCase(publishPhoto.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        console.log("Erro registrado no Redux:", action.payload); 
+        state.photo = {};
+      })
+      .addCase(getUserPhotos.pending, (state) => {
+        state.loading = true;
+        state.error = false;
+      })
+      .addCase(getUserPhotos.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.error = null;
+        state.photo = action.payload;
+      })
+      .addCase(deletePhoto.pending, (state) => {
+        state.loading = true;
+        state.error = false;
+      })
+      .addCase(deletePhoto.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.error = null;
+        console.log("chegou aqui no slice da photo");
+        state.photos = state.photos.filter((photo) => {
+          return photo._id !== action.payload.id;
+        });
+        state.message = action.payload.message;
+      })
+      .addCase(deletePhoto.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
         state.photo = {};
       });
   },
