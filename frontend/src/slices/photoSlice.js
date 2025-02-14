@@ -54,6 +54,27 @@ export const deletePhoto = createAsyncThunk(
   }
 );
 
+// update a photo
+export const updatePhoto = createAsyncThunk(
+  "photo/update",
+  async (photoData, thunkAPI) => {
+    const token = thunkAPI.getState().auth.User.token;
+    console.log("🚀 ~ token:", token);
+
+    const data = await photoService.updatePhoto(
+      { title: photoData.title },
+      photoData.id,
+      token
+    );
+    console.log(data);
+
+    if (data.errors) {
+      return thunkAPI.rejectWithValue(data.errors[0]);
+    }
+    return data;
+  }
+);
+
 export const photoSlice = createSlice({
   name: "photo",
   initialState,
@@ -99,13 +120,43 @@ export const photoSlice = createSlice({
         state.loading = false;
         state.success = true;
         state.error = null;
-        console.log("chegou aqui no slice da photo");
+
         state.photos = state.photos.filter((photo) => {
           return photo._id !== action.payload.id;
         });
         state.message = action.payload.message;
       })
       .addCase(deletePhoto.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.photo = {};
+      })
+      .addCase(updatePhoto.pending, (state) => {
+        state.loading = true;
+        state.error = false;
+      })
+      .addCase(updatePhoto.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.error = null;
+
+        console.log("🚀 ~ action.payload:", action.payload);
+
+        state.photos = state.photos.map((photo) => {
+          if (!photo || !photo._id) {
+            console.error(" Foto inválida dentro de state.photos!", photo);
+            return photo;
+          }
+
+          return photo._id === action.payload._id
+            ? { ...photo, title: action.payload.title }
+            : photo;
+        });
+        state.message = action.payload.message;
+
+        console.log("📢 Mensagem de sucesso:", state.message);
+      })
+      .addCase(updatePhoto.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         state.photo = {};
